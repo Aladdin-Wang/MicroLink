@@ -1,7 +1,7 @@
 #include "dap_main.h"
 #include "usbd_core.h"
 #include "SEGGER_RTTView.h"
-
+#include "SEGGER_SystemView.h"
 static volatile uint16_t USB_RequestIndexI = 0; // Request  Index In
 static volatile uint16_t USB_RequestIndexO = 0; // Request  Index Out
 static volatile uint16_t USB_RequestCountI = 0; // Request  Count In
@@ -92,12 +92,13 @@ void chry_dap_handle(void)
                 // }
             }
         }
-
+        uint32_t level = disable_global_irq(CSR_MSTATUS_MIE_MASK);
         // Execute DAP Command (process request and prepare response)
         USB_RespSize[USB_ResponseIndexI] =
                 (uint16_t) DAP_ExecuteCommand(USB_Request[USB_RequestIndexO], USB_Response[USB_ResponseIndexI]);
-
-        current_time = get_system_time_ms() + 10;
+        restore_global_irq(level);
+        //clock_cpu_delay_ms(1);
+        current_time = get_system_time_ms() + 20;
 
         // Update Request Index and Count
         USB_RequestIndexO++;
@@ -135,6 +136,7 @@ void chry_dap_handle(void)
     }
     if(get_system_time_ms() >= current_time) {
         read_rtt_and_send_usb();
+        SYSVIEW_REC_GetOutgoing();
     }
 }
 

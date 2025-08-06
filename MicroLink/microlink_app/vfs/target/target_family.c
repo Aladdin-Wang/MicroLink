@@ -23,7 +23,6 @@
 #include "swd_host.h"
 #include "target_family.h"
 #include "target_board.h"
-#include "core_cm3.h"
 #include "target_config.h"
 
 target_cfg_t target_device = {
@@ -64,7 +63,13 @@ uint32_t target_get_apsel()
     return 0;
 }
 
+#define NVIC_Addr    (0xe000e000)
+#define NVIC_AIRCR     (NVIC_Addr + 0x0D0C)
 
+#define VECTKEY        0x05FA0000  // Write Key
+#define SCB_AIRCR_PRIGROUP_Pos              8U                                            /*!< SCB AIRCR: PRIGROUP Position */
+#define SCB_AIRCR_PRIGROUP_Msk             (7UL << SCB_AIRCR_PRIGROUP_Pos)                /*!< SCB AIRCR: PRIGROUP Mask */
+#define SYSRESETREQ    0x00000004  // Reset System (except Debug)
 uint8_t software_reset(void)
 {
     if (DAP_Data.debug_port != DAP_PORT_SWD) {

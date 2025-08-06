@@ -72,10 +72,9 @@ typedef struct {
 } SEGGER_RTT_CB;
 
 
-uint32_t receive_usb_and_write_rtt(uint8_t inputChar);
+uint32_t write_rtt_and_receive_usb(uint8_t inputChar);
 void read_rtt_and_send_usb(void);
-void RTTView_init(uint32_t wAddr,uint32_t wSize);
-void RTTView_Uninit(void);
+
 #endif
 
 

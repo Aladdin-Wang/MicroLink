@@ -205,7 +205,9 @@ error_t flash_decoder_write(uint32_t addr, const uint8_t *data, uint32_t size)
             if (flash_buf_pos >= sizeof(flash_buf)) {
                 util_assert(sizeof(flash_buf) == flash_buf_pos);
                 // Determine flash type and get info for it
-                flash_type = flash_decoder_detect_type(flash_buf, flash_buf_pos, initial_addr, true);
+                //flash_type = flash_decoder_detect_type(flash_buf, flash_buf_pos, initial_addr, true);
+                flash_type_target_bin = true;
+                flash_type = FLASH_DECODER_TYPE_TARGET;
                 flash_decoder_printf("    Buffering complete, setting flash_type=%i\r\n", flash_type);
                 flash_type_known = true;
             }

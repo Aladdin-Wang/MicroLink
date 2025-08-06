@@ -7,7 +7,6 @@
 #include "flash_decoder.h"
 #include "intelhex.h"
 #include "target_family.h"
-#include "flash_algo.h"
 #include "board.h"
 #include "hpm_ppor_drv.h"
 #include "swd_host.h"
@@ -80,10 +79,7 @@ static uint32_t load_bin_start_address = 0; // Decoded from the flash decoder, t
 #define USER_DATA_SIZE            192
 #define MARK_SIZE                 64
 typedef struct {
-    char chProjectName[16];
-    char chHardWareVersion[16];
-    char chSoftBootVersion[16];
-    char chSoftAppVersion[16];
+    char chProjectName[64];
     uint8_t trackedSectors[128];
 } msgSig_t;
 typedef struct {
@@ -94,10 +90,7 @@ typedef struct {
 } user_data_t;
 
 user_data_t tUserData = {
-    .msg_data.sig.chProjectName = "microlink",
-    .msg_data.sig.chHardWareVersion = "V1.0.0",
-    .msg_data.sig.chSoftBootVersion = "V1.0.0",
-    .msg_data.sig.chSoftAppVersion =  "V1.0.0",
+    .msg_data.sig.chProjectName = "MicroLink.rbl",
 };
 
 stream_type_t stream_start_identify(const uint8_t *data, uint32_t size)
@@ -220,10 +213,11 @@ uint32_t get_bin_start_address(void)
 {
     return load_bin_start_address;
 }
-#include "pikaScript.h"
+
 error_t write_bin(void *state, uint32_t sector,const uint8_t *data, uint32_t size)
 {
     error_t status;
+    uint32_t level;
     led_usb_in_activity();
     led_usb_out_activity();
     bin_state_t *bin_state = (bin_state_t *)state;
@@ -264,8 +258,9 @@ error_t write_bin(void *state, uint32_t sector,const uint8_t *data, uint32_t siz
         }
        // printf(" start_addr = 0x%x,flash_addr = 0x%x\r\n",start_addr,bin_state->flash_addr);
         // Pass on data to the decoder
+        level = disable_global_irq(CSR_MSTATUS_MIE_MASK);
         status = flash_decoder_write(bin_state->flash_addr, bin_state->vector_buf, bin_state->buf_pos);
-
+        restore_global_irq(level);
         if (ERROR_SUCCESS != status) {
             printf("flash_addr = 0x%x,status = %d\r\n",bin_state->flash_addr,status);
             return status;
@@ -273,10 +268,10 @@ error_t write_bin(void *state, uint32_t sector,const uint8_t *data, uint32_t siz
 
         bin_state->flash_addr += bin_state->buf_pos;
     }
-
     // Write data
+    level = disable_global_irq(CSR_MSTATUS_MIE_MASK);
     status = flash_decoder_write(bin_state->flash_addr, data, size);
-
+    restore_global_irq(level);
     if (ERROR_SUCCESS != status) {
         printf("flash_addr = 0x%x,status = %d\r\n",bin_state->flash_addr,status);
         return status;
@@ -296,6 +291,9 @@ error_t close_bin(void *state)
     extern uint8_t software_reset(void);
     software_reset(); 
     
+    //添加下载完成的文件，记录下载次数
+
+
     return status;
 }
 
@@ -415,21 +413,23 @@ static error_t close_rbl(void *state)
 {
     error_t status = ERROR_SUCCESS;
     rbl_state_t *rbl_state = (rbl_state_t *)state;
-    //for (uint32_t j = 0; j < rbl_state->tracked_sector_count; j++) {
-    //    printf("Sector %u\n", rbl_state->tracked_sectors[j]);
-    //} 
+    for (uint32_t j = 0; j < rbl_state->tracked_sector_count; j++) {
+        printf("Sector %u\n", rbl_state->tracked_sectors[j]);
+    } 
     memcpy(tUserData.msg_data.sig.trackedSectors, rbl_state->tracked_sectors, rbl_state->tracked_sector_count);
     enter_bootloader((uint8_t *)&tUserData,sizeof(tUserData)); 
     return status;
 }
 
+
 void enter_bootloader(uint8_t *pchDate, uint16_t hwLength)
 {
     uint32_t wData = 0;
 
-    if (rom_xpi_nor_erase(BOARD_APP_XPI_NOR_XPI_BASE, xpi_xfer_channel_auto, &s_xpi_nor_config,(FAT_ON_CHIP_FLASH_OFFSET + (APP_PART_ADDR + APP_PART_SIZE - (3*MARK_SIZE) - (USER_DATA_SIZE))  - 0x80000000 ), USER_DATA_SIZE) != status_success) {
+    if (rom_xpi_nor_erase(BOARD_APP_XPI_NOR_XPI_BASE, xpi_xfer_channel_auto, &s_xpi_nor_config,((APP_PART_ADDR + APP_PART_SIZE - (3*MARK_SIZE) - (USER_DATA_SIZE))  - 0x80000000 ), USER_DATA_SIZE) != status_success) {
         return;
     }
+
     if (rom_xpi_nor_program(BOARD_APP_XPI_NOR_XPI_BASE, xpi_xfer_channel_auto, &s_xpi_nor_config, (uint32_t *)pchDate, (APP_PART_ADDR + APP_PART_SIZE - (3*MARK_SIZE) - (USER_DATA_SIZE) - 0x80000000), USER_DATA_SIZE) != status_success) {
         return;
     }
@@ -437,6 +437,7 @@ void enter_bootloader(uint8_t *pchDate, uint16_t hwLength)
     if (rom_xpi_nor_program(BOARD_APP_XPI_NOR_XPI_BASE, xpi_xfer_channel_auto, &s_xpi_nor_config, (uint32_t *)&wData, (APP_PART_ADDR + APP_PART_SIZE - MARK_SIZE - 0x80000000), sizeof(wData)) != status_success) {
         return;
     }
+
     ppor_sw_reset(HPM_PPOR, 5000);
 }
 

@@ -255,15 +255,17 @@ static error_t target_flash_program_page(uint32_t addr, const uint8_t *buf, uint
                     } else {
                         return_type = FLASHALGO_RETURN_BOOL;
                     }
-                    if (!swd_flash_syscall_exec(&flash->sys_call_s,
+                    uint32_t offset = swd_flash_syscall_verify_exec(&flash->sys_call_s,
                                         flash->verify,
                                         addr,
                                         write_size,
                                         flash->program_buffer,
                                         0,
-                                        return_type)) {
+                                        return_type);
+                    if(offset != (addr + write_size)){
+                        //printf("offset = 0x%x,addr = 0x%x\r\n",offset,addr);
                         return ERROR_WRITE_VERIFY;
-                    }
+                    }                 
                 } else {
                     while (write_size > 0) {
                         uint8_t rb_buf[16];
@@ -385,7 +387,7 @@ static uint32_t target_flash_erase_sector_size(uint32_t addr)
             uint32_t wSectorStart = g_board_info.target_cfg->flash_dev_info->sectors[chPartitionIndex].AddrSector;
             uint32_t wSectorSize = g_board_info.target_cfg->flash_dev_info->sectors[chPartitionIndex].szSector;
             uint32_t Adr = addr - g_board_info.target_cfg->flash_dev_info->DevAdr;
-            for(wSector = 0; wSector < 0XFF; wSector++) {
+            for(wSector = 0; wSector < 0XFFFF; wSector++) {
                 if((Adr >= wSectorStart && Adr < wSectorStart + wSectorSize)) {
                     return wSectorSize;
                 }

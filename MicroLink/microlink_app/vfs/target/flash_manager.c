@@ -334,7 +334,7 @@ static error_t setup_next_sector(uint32_t addr)
     if (page_erase_enabled) {
         // Erase the current sector
         status = intf->erase_sector(current_sector_addr);
-        flash_manager_printf("    intf->erase_sector(addr=0x%x) ret=%i\r\n", current_sector_addr);       
+        flash_manager_printf("    intf->erase_sector(addr=0x%x) ret=%i\r\n", current_sector_addr,status);       
         if (ERROR_SUCCESS != status) {
             intf->uninit();
             return status;

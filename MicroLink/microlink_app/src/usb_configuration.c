@@ -4,7 +4,7 @@
 #include "usb2uart.h"
 #include "usb2msc.h"
 #include "usb2python.h"
-
+#include "hpm_romapi.h"
 
 #define USB_CONFIG_SIZE (9 + CMSIS_DAP_INTERFACE_SIZE + CONFIG_MSC_DESCRIPTOR_LEN + CDC_ACM_DESCRIPTOR_LEN + CDC_ACM_DESCRIPTOR_LEN \
                            + CONFIG_USB485_DESCRIPTOR_LEN + CONFIG_SLCAN0_DESCRIPTOR_LEN + CONFIG_SLCAN2_DESCRIPTOR_LEN)
@@ -62,12 +62,12 @@ static const uint8_t other_speed_config_descriptor[] = {
         CDC_ACM_DESCRIPTOR_INIT(MSC_INTF_NUM + 9, CDC_INT_EP4, CDC_OUT_EP4, CDC_IN_EP4, DAP_PACKET_SIZE, 0x00),
 #endif
 };
-
-char *string_descriptors[] = {
+static char serial_number[17]; // 缓冲区
+static char *string_descriptors[] = {
         (char[]) {0x09, 0x04},              /* Langid */
         "CherryUSB",                        /* Manufacturer */
         "MicroLink CMSIS-DAP",              /* Product */
-        "123456789ABCDEF",                  /* Serial Number */
+        serial_number,                     /* Serial Number */
 };
 
 static const uint8_t device_quality_descriptor[] = {
@@ -197,7 +197,15 @@ const uint8_t *device_quality_descriptor_callback(uint8_t speed)
 const char *string_descriptor_callback(uint8_t speed, uint8_t index)
 {
     (void) speed;
-
+    uint32_t uid_word[4];
+    ROM_API_TABLE_ROOT->otp_driver_if->init();
+    uid_word[0] = ROM_API_TABLE_ROOT->otp_driver_if->read_from_shadow(88); 
+    uid_word[1] = ROM_API_TABLE_ROOT->otp_driver_if->read_from_shadow(89);
+    uid_word[2] = ROM_API_TABLE_ROOT->otp_driver_if->read_from_shadow(90);
+    uid_word[3] = ROM_API_TABLE_ROOT->otp_driver_if->read_from_shadow(91);
+    snprintf(serial_number, sizeof(serial_number),
+             "%08X%08X",
+             uid_word[0], uid_word[1]);
     if (index >= (sizeof(string_descriptors) / sizeof(char *))) {
         return NULL;
     }
@@ -233,6 +241,7 @@ void usbd_event_handler(uint8_t busid, uint8_t event)
             usbrx_idle_flag = 0;
             usbtx_idle_flag = 0;
             uarttx_idle_flag = 0;
+            ep_tx_busy_flag = 0;
             config_uart_transfer = 0;
             break;
         case USBD_EVENT_CONNECTED:
@@ -283,16 +292,19 @@ void usbd_cdc_acm_set_line_coding(uint8_t busid, uint8_t intf, struct cdc_line_c
 {
     (void) busid;
     if(intf == intf2.intf_num){
-          memcpy((uint8_t *) &g_cdc_lincoding, line_coding, sizeof(struct cdc_line_coding));
-          config_uart = 1;
-          config_uart_transfer = 0;
+        memcpy((uint8_t *) &g_cdc_lincoding, line_coding, sizeof(struct cdc_line_coding));
+        config_uart = 1;
+        config_uart_transfer = 0;
     }
 
     if(intf == intf4.intf_num){
-          memcpy((uint8_t *) &g_cdc1_lincoding, line_coding, sizeof(struct cdc_line_coding));  
-          config_uart_python = 1;
+        if (memcmp(line_coding, (uint8_t *) &g_cdc1_lincoding, sizeof(struct cdc_line_coding)) != 0) {
+            memcpy((uint8_t *) &g_cdc1_lincoding, line_coding, sizeof(struct cdc_line_coding));
+            config_uart_python = 1;
+            ep_tx_busy_flag = false;
+        }
     }
-
+    
 #ifdef CONFIG_USB485
     if(intf == intf6.intf_num){
       if (memcmp(line_coding, (uint8_t *) &g_cdc2_lincoding, sizeof(struct cdc_line_coding)) != 0) {

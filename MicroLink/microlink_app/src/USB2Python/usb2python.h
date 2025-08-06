@@ -2,7 +2,7 @@
 #define HSLINK_PRO_USB2PYTHON_H
 #include "usb_configuration.h"
 
-
+extern volatile bool ep_tx_busy_flag;
 extern USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t cdc1_tmpbuffer[];
 
 extern volatile struct cdc_line_coding g_cdc1_lincoding;

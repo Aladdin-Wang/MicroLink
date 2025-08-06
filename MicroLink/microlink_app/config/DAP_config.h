@@ -403,14 +403,14 @@ __STATIC_INLINE void PORT_JTAG_SETUP (void) {
     HPM_IOC->PAD[PIN_TCK].PAD_CTL = IOC_PAD_PAD_CTL_HYS_SET(1) | IOC_PAD_PAD_CTL_PRS_SET(2) | IOC_PAD_PAD_CTL_PE_SET(1) | IOC_PAD_PAD_CTL_PS_SET(1)  | IOC_PAD_PAD_CTL_SR_SET(1) | IOC_PAD_PAD_CTL_SPD_SET(3)| IOC_PAD_PAD_CTL_DS_SET(0);
     HPM_IOC->PAD[PIN_TMS].PAD_CTL = IOC_PAD_PAD_CTL_HYS_SET(1) | IOC_PAD_PAD_CTL_PRS_SET(2) | IOC_PAD_PAD_CTL_PE_SET(1) | IOC_PAD_PAD_CTL_PS_SET(1)   | IOC_PAD_PAD_CTL_SR_SET(1)| IOC_PAD_PAD_CTL_SPD_SET(3)| IOC_PAD_PAD_CTL_DS_SET(0);
     HPM_IOC->PAD[PIN_TDI].PAD_CTL = IOC_PAD_PAD_CTL_HYS_SET(1) | IOC_PAD_PAD_CTL_PRS_SET(2) | IOC_PAD_PAD_CTL_PE_SET(1) | IOC_PAD_PAD_CTL_PS_SET(1)| IOC_PAD_PAD_CTL_SPD_SET(3)| IOC_PAD_PAD_CTL_DS_SET(0);
-    HPM_IOC->PAD[PIN_nRESET].PAD_CTL =  IOC_PAD_PAD_CTL_PRS_SET(2) | IOC_PAD_PAD_CTL_PE_SET(1) | IOC_PAD_PAD_CTL_PS_SET(1) | IOC_PAD_PAD_CTL_SR_SET(1) | IOC_PAD_PAD_CTL_SPD_SET(3)| IOC_PAD_PAD_CTL_DS_SET(0);
-     gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_nRESET_NUM, false);
-     clock_cpu_delay_us(100);
-     gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_nRESET_NUM, true);
-     clock_cpu_delay_us(100);
-     gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_nRESET_NUM, false);
-     clock_cpu_delay_us(100);
-     gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_nRESET_NUM, true);
+    HPM_IOC->PAD[PIN_nRESET].PAD_CTL =IOC_PAD_PAD_CTL_OD_SET(1)| IOC_PAD_PAD_CTL_PRS_SET(2) | IOC_PAD_PAD_CTL_PE_SET(1) | IOC_PAD_PAD_CTL_PS_SET(1) | IOC_PAD_PAD_CTL_SR_SET(1) | IOC_PAD_PAD_CTL_SPD_SET(3)| IOC_PAD_PAD_CTL_DS_SET(0) ;
+    gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_nRESET_NUM, false);
+    clock_cpu_delay_us(100);
+    gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_nRESET_NUM, true);
+    clock_cpu_delay_us(100);
+    gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_nRESET_NUM, false);
+    clock_cpu_delay_us(100);
+    gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_nRESET_NUM, true);
 }
 
 /** Setup SWD I/O pins: SWCLK, SWDIO, and nRESET.
@@ -418,8 +418,8 @@ Configures the DAP Hardware I/O pins for Serial Wire Debug (SWD) mode:
  - SWCLK, SWDIO, nRESET to output mode and set to default high level.
  - TDI, nTRST to HighZ mode (pins are unused in SWD mode).
 */
-__STATIC_INLINE void PORT_SWD_SETUP (void) {
 
+__STATIC_INLINE void PORT_SWD_SETUP (void) {
 
     HPM_IOC->PAD[PIN_TCK].FUNC_CTL = IOC_PAD_FUNC_CTL_ALT_SELECT_SET(0) | IOC_PAD_FUNC_CTL_LOOP_BACK_MASK; /* as gpio*/
     HPM_IOC->PAD[PIN_TMS].FUNC_CTL = IOC_PAD_FUNC_CTL_ALT_SELECT_SET(0); /* as gpio*/
@@ -435,8 +435,8 @@ __STATIC_INLINE void PORT_SWD_SETUP (void) {
     gpio_set_pin_output(PIN_GPIO, PIN_PORT, PIN_TMS_NUM);
     gpio_set_pin_output(PIN_GPIO, PIN_LED_PORT, PIN_LED_NUM);
     gpio_set_pin_output_with_initial(PIN_GPIO, PIN_PORT, PIN_nRESET_NUM, true);
-    HPM_IOC->PAD[PIN_TCK].PAD_CTL = IOC_PAD_PAD_CTL_HYS_SET(1) | IOC_PAD_PAD_CTL_PRS_SET(2) | IOC_PAD_PAD_CTL_PE_SET(1) | IOC_PAD_PAD_CTL_PS_SET(1) | IOC_PAD_PAD_CTL_SR_SET(1) | IOC_PAD_PAD_CTL_SPD_SET(3)| IOC_PAD_PAD_CTL_DS_SET(0);
-    HPM_IOC->PAD[PIN_TMS].PAD_CTL = IOC_PAD_PAD_CTL_HYS_SET(1) | IOC_PAD_PAD_CTL_PRS_SET(2) | IOC_PAD_PAD_CTL_PE_SET(1) | IOC_PAD_PAD_CTL_PS_SET(1) | IOC_PAD_PAD_CTL_SR_SET(1) | IOC_PAD_PAD_CTL_SPD_SET(3)| IOC_PAD_PAD_CTL_DS_SET(0);
+    HPM_IOC->PAD[PIN_TCK].PAD_CTL = IOC_PAD_PAD_CTL_HYS_SET(0) | IOC_PAD_PAD_CTL_PRS_SET(1) | IOC_PAD_PAD_CTL_PE_SET(1) | IOC_PAD_PAD_CTL_PS_SET(1) | IOC_PAD_PAD_CTL_SR_SET(1) | IOC_PAD_PAD_CTL_SPD_SET(3)| IOC_PAD_PAD_CTL_DS_SET(1);
+    HPM_IOC->PAD[PIN_TMS].PAD_CTL = IOC_PAD_PAD_CTL_HYS_SET(1) | IOC_PAD_PAD_CTL_PRS_SET(1) | IOC_PAD_PAD_CTL_PE_SET(1) | IOC_PAD_PAD_CTL_PS_SET(1) | IOC_PAD_PAD_CTL_SR_SET(1) | IOC_PAD_PAD_CTL_SPD_SET(3)| IOC_PAD_PAD_CTL_DS_SET(1);
     HPM_IOC->PAD[PIN_nRESET].PAD_CTL = IOC_PAD_PAD_CTL_PRS_SET(2) | IOC_PAD_PAD_CTL_PE_SET(1) | IOC_PAD_PAD_CTL_PS_SET(1) | IOC_PAD_PAD_CTL_SPD_SET(3)| IOC_PAD_PAD_CTL_DS_SET(0);
 
      gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_nRESET_NUM, false);
@@ -446,6 +446,7 @@ __STATIC_INLINE void PORT_SWD_SETUP (void) {
      gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_nRESET_NUM, false);
      clock_cpu_delay_us(100);
      gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_nRESET_NUM, true);
+
 }
 
 /** Disable JTAG/SWD I/O Pins.
@@ -488,6 +489,16 @@ __STATIC_INLINE void PORT_OFF (void) {
     gpio_set_pin_input(PIN_GPIO, PIN_PORT, PIN_nRESET_NUM);
     gpio_disable_pin_interrupt(PIN_GPIO, GPIO_IE_GPIOA, PIN_nRESET_NUM);
     gpiom_set_pin_controller(HPM_GPIOM, GPIOM_ASSIGN_GPIOA, PIN_nRESET_NUM, gpiom_soc_gpio0);
+
+    /*******************TDI->按键************TDO->蜂鸣器************************************/
+    HPM_IOC->PAD[PIN_TDI].FUNC_CTL = IOC_PAD_FUNC_CTL_ALT_SELECT_SET(0); /* as gpio*/
+    HPM_IOC->PAD[PIN_TDO].FUNC_CTL = IOC_PAD_FUNC_CTL_ALT_SELECT_SET(0);
+
+    HPM_IOC->PAD[PIN_TDI_NUM].PAD_CTL =  IOC_PAD_PAD_CTL_PRS_SET(2) | IOC_PAD_PAD_CTL_PE_SET(1) | IOC_PAD_PAD_CTL_PS_SET(1);
+    gpio_set_pin_input(HPM_GPIO0, GPIO_DI_GPIOA, PIN_TDI_NUM);
+
+    HPM_IOC->PAD[PIN_TDO_NUM].PAD_CTL =  IOC_PAD_PAD_CTL_PRS_SET(2) | IOC_PAD_PAD_CTL_PE_SET(1) | IOC_PAD_PAD_CTL_PS_SET(1);
+    gpio_set_pin_output_with_initial(HPM_GPIO0, GPIO_DO_GPIOA, PIN_TDO_NUM, 0);
 }
 
 
@@ -546,27 +557,6 @@ __STATIC_FORCEINLINE void     PIN_SWDIO_TMS_CLR (void) {
     __asm volatile("fence io, io");
 }
 
-/** SWDIO I/O pin: Get Input (used in SWD mode only).
-\return Current status of the SWDIO DAP hardware I/O pin.
-*/
-__STATIC_FORCEINLINE uint32_t PIN_SWDIO_IN      (void) {
-    uint32_t sta =  gpio_read_pin(PIN_GPIO, PIN_PORT, PIN_TMS_NUM);
-    __asm volatile("fence io, io");
-    return sta;
-}
-
-/** SWDIO I/O pin: Set Output (used in SWD mode only).
-\param bit Output value for the SWDIO DAP hardware I/O pin.
-*/
-__STATIC_FORCEINLINE void     PIN_SWDIO_OUT     (uint32_t bit) {
-  if(bit & 0x01) {
-     gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_TMS_NUM, true);
-  }
-  else {
-     gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_TMS_NUM, false);
-  }
-  __asm volatile("fence io, io");
-}
 
 /** SWDIO I/O pin: Switch to Output mode (used in SWD mode only).
 Configure the SWDIO DAP hardware I/O pin to output mode. This function is
@@ -591,6 +581,27 @@ __STATIC_FORCEINLINE void     PIN_SWDIO_OUT_DISABLE (void) {
     gpiom_set_pin_controller(HPM_GPIOM, GPIOM_ASSIGN_GPIOA, PIN_TMS_NUM, gpiom_soc_gpio0);
 }
 
+/** SWDIO I/O pin: Get Input (used in SWD mode only).
+\return Current status of the SWDIO DAP hardware I/O pin.
+*/
+__STATIC_FORCEINLINE uint32_t PIN_SWDIO_IN      (void) {
+    uint32_t sta =  gpio_read_pin(PIN_GPIO, PIN_PORT, PIN_TMS_NUM);
+    __asm volatile("fence io, io");
+    return sta;
+}
+
+/** SWDIO I/O pin: Set Output (used in SWD mode only).
+\param bit Output value for the SWDIO DAP hardware I/O pin.
+*/
+__STATIC_FORCEINLINE void     PIN_SWDIO_OUT     (uint32_t bit) {
+  if(bit & 0x01) {
+     gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_TMS_NUM, true);
+  }
+  else {
+     gpio_write_pin(PIN_GPIO, PIN_PORT, PIN_TMS_NUM, false);
+  }
+  __asm volatile("fence io, io");
+}
 
 // TDI Pin I/O ---------------------------------------------
 

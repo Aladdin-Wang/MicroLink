@@ -13,16 +13,19 @@
 #include "usb2uart.h"
 #include "usb2python.h"
 #include "microboot.h"
+#include "perf_counter.h"
 #include "ff.h"
 #include "ymodem_send.h"
 #include "chry_ringbuffer.h"
 #include "SEGGER_RTTView.h"
+#include "hpm_mchtmr_drv.h"
+#include "key_task.h"
 
 ATTR_RAMFUNC_WITH_ALIGNMENT(4) 
 static uint8_t s_chBuffer[1024] ;
 static byte_queue_t                  s_tCheckUsePeekQueue;
 static fsm(check_use_peek)           s_fsmCheckUsePeek;
-static check_shell_t                 s_tShellObj;
+
 #define LED_FLASH_PERIOD_IN_MS 10
 static volatile uint8_t ledUsbInActivity = 0;
 static volatile uint8_t ledUsbOutActivity = 0;
@@ -34,12 +37,15 @@ extern USB_NOCACHE_RAM_SECTION chry_ringbuffer_t g_python_usbtx;
 extern ymodem_lib_send_t tYmodemLibSend;
 extern FRESULT flash_mount_fs(void);
 
+
 int main(void)
 {
     board_init();
     dma_mgr_init();
+    init_cycle_counter(false);
     board_init_gpio_pins();
     board_init_led_pins();
+    key_init();
     board_init_usb((USB_Type *)CONFIG_HPM_USBD_BASE);
     intc_set_irq_priority(CONFIG_HPM_USBD_IRQn, 2);
     FRESULT fresult =  flash_mount_fs();
@@ -48,6 +54,7 @@ int main(void)
     if(fresult == FR_OK){
         pika_script_Init();
     }
+
     board_timer_create(LED_FLASH_PERIOD_IN_MS, usb_led_toggle);
     queue_init(&s_tCheckUsePeekQueue, s_chBuffer, sizeof(s_chBuffer));
     init_fsm(check_use_peek, &s_fsmCheckUsePeek, args(&s_tCheckUsePeekQueue));
@@ -58,15 +65,17 @@ int main(void)
     connect(&tUartMsgObj, SIGNAL(uart_sig), &g_uartrx, SLOT(chry_ringbuffer_write));  
     connect(&tRTTMsgObj, SIGNAL(rtt_sig), &g_python_usbtx, SLOT(chry_ringbuffer_write)); 
     connect(&tYmodemLibSend.tYmodemSent, SIGNAL(ymodem_send_sig), &g_usbrx, SLOT(chry_ringbuffer_write));   
-    connect(&tYmodemLibSend.tYmodemSent, SIGNAL(ymodem_send_sig), &g_uartrx, SLOT(chry_ringbuffer_write));     
-     
+    connect(&tYmodemLibSend.tYmodemSent, SIGNAL(ymodem_send_sig), &g_uartrx, SLOT(chry_ringbuffer_write));  
+
     while(1) {
         chry_dap_handle();
         chry_dap_usb2uart_handle();
         usb2uart_handler();
         chry_dap_pikapython_handle();
         call_fsm( check_use_peek,  &s_fsmCheckUsePeek );
+        key_module_display(1);        
     }
+
     return 0;
 }
 

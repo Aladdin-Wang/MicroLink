@@ -29,7 +29,7 @@
 #include "DAP_config.h"
 #include "DAP.h"
 #include "swd_host.h"
-#include "core_cm3.h"
+
 #if (DAP_PACKET_SIZE < 64U)
 #error "Minimum Packet Size is 64!"
 #endif
@@ -58,7 +58,7 @@ static const char DAP_FW_Ver [] = DAP_FW_VER;
 
 // Common clock delay calculation routine
 //   clock:    requested SWJ frequency in Hertz
-static void Set_Clock_Delay(uint32_t clock) {
+void Set_Clock_Delay(uint32_t clock) {
   uint32_t delay;
 
   if (clock >= MAX_SWJ_CLOCK(DELAY_FAST_CYCLES)) {

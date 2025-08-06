@@ -5,14 +5,14 @@
 extern void reboot(void);
 typedef FIL _INNER_FILE;
 int __fmodeflags(const char* mode);
-
+static uint32_t level;
 void pika_platform_enable_irq_handle(void)
 {
-
+    restore_global_irq(level);
 }
 void pika_platform_disable_irq_handle(void)
 {
-
+    level = disable_global_irq(CSR_MSTATUS_MIE_MASK);
 }
 
 void pika_platform_reboot(void) 
@@ -22,7 +22,7 @@ void pika_platform_reboot(void)
 
 int64_t pika_platform_get_tick(void) 
 {
-    return hpm_csr_get_core_cycle();
+    return hpm_csr_get_core_cycle() / (int64_t)clock_get_core_clock_ticks_per_ms();
 }
 
 FILE* pika_platform_fopen(const char* filename, const char* modes)

@@ -18,6 +18,7 @@ typedef struct  {
      uint32_t  erase_chip;
      uint32_t  erase_sector;
      uint32_t  program_page;
+     uint32_t  read;
      uint32_t  verify;
      program_syscall_t sys_call_s;
      uint32_t  program_buffer;
@@ -25,7 +26,7 @@ typedef struct  {
      uint32_t  algo_size;
      uint32_t *algo_blob;
      uint32_t  program_buffer_size;
-     uint32_t  algo_flags;         /*!< Combination of kAlgoVerifyReturnsAddress, kAlgoSingleInitType and kAlgoSkipChipErase*/
+     uint32_t  algo_flags;         
 } program_target_t;
 
 typedef struct  {

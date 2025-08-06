@@ -3,4 +3,6 @@ import FLMConfig
 import load
 import ym
 import RTTView
-print('hello pikapython!')
+import SystemView
+import cmd
+print('hello Microlink!')

@@ -6,6 +6,7 @@
 #include "PikaVM.h"
 #include "ff.h"
 #include "SEGGER_RTTView.h"
+#include "SEGGER_SystemView.h"
 
 USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t cdc1_tmpbuffer[DAP_PACKET_SIZE];
 
@@ -13,7 +14,7 @@ static volatile bool usbtx_idle_flag = false,usbrx_idle_flag = false;
 volatile struct cdc_line_coding g_cdc1_lincoding;
 volatile uint8_t config_uart_python = 0;
 volatile uint8_t config_uart_open = 0;
-static PikaObj* pikaMain = NULL;
+PikaObj* pikaMain = NULL;
 
 USB_NOCACHE_RAM_SECTION chry_ringbuffer_t g_python_usbtx;
 static USB_NOCACHE_RAM_SECTION chry_ringbuffer_t g_python_usbrx;
@@ -24,13 +25,25 @@ static USB_NOCACHE_RAM_SECTION USB_MEM_ALIGNX uint8_t usbrx_ringbuffer[CONFIG_US
 volatile bool ep_tx_busy_flag = false;
 extern void led_usb_in_activity(void);
 extern void led_usb_out_activity(void);
+extern int64_t get_system_time_ms(void);
 int pika_platform_putchar(char ch) 
 {
     if(config_uart_open && pikaMain != NULL){
-        while (ep_tx_busy_flag);
+        int64_t time = get_system_time_ms();
+        while (ep_tx_busy_flag){
+           if(get_system_time_ms() > (time + 1)){
+               chry_ringbuffer_write(&g_python_usbtx, &ch, 1);
+               return 1;
+           }
+        }
         usbd_ep_start_write(0, CDC_IN_EP1, (const uint8_t *)&ch, 1);
         ep_tx_busy_flag = true;
-        while (ep_tx_busy_flag);
+        time = get_system_time_ms();
+        while (ep_tx_busy_flag){
+           if(get_system_time_ms() > (time + 1)){
+               return 1;
+           }
+        }
     }else{
         chry_ringbuffer_write(&g_python_usbtx, &ch, 1);
     }
@@ -68,11 +81,12 @@ struct usbd_endpoint cdc_in_ep1 = {
 
 void pika_script_Init(void)
 {
+
     chry_ringbuffer_init(&g_python_usbtx, usbtx_ringbuffer, CONFIG_USBRX_RINGBUF_SIZE);
     chry_ringbuffer_init(&g_python_usbrx, usbrx_ringbuffer, CONFIG_USBRX_RINGBUF_SIZE);    
     pikaMain = pikaScriptInit();
     if(pikaMain){
-        pikaVM_runSingleFile(pikaMain,"flm_config.py");
+        pikaVM_runSingleFile(pikaMain,"drag_download.py");
     }
 }
 
@@ -97,9 +111,11 @@ void chry_dap_pikapython_handle(void)
 
             if (chry_ringbuffer_get_used(&g_python_usbrx)) {
                 chry_ringbuffer_read_byte(&g_python_usbrx,&ch);
-                if(receive_usb_and_write_rtt(ch) == 0){            
-                    if(pikaMain != NULL){
-                        obj_runChar(pikaMain, ch);
+                if(write_rtt_and_receive_usb(ch) == 0){            
+                    if(SYSVIEW_REC_ProcessIncoming(ch) == 0){            
+                        if(pikaMain != NULL){
+                            obj_runChar(pikaMain, ch);
+                        }
                     }
                 }
             }

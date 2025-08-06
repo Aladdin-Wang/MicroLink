@@ -21,8 +21,29 @@ static const TCHAR HTML[] =
 
 static const TCHAR VERSION[] =        
   "\
+  Read Me See: https://microboot.readthedocs.io/zh-cn/latest/tools/microlink/microlink\r\n\
+  V2.3.2 \r\n\
+  1.优化脱机下载;\r\n\
+  V2.3.1 \r\n\
+  1.增加对SystemView的支持;\r\n\
+  2.解决电脑休眠后，需要重新拔插USB的问题;\r\n\
+  V2.2.2 \r\n\
+  1.增加关闭RTT的API:RTTView.stop();\r\n\
+  2.增加控制IO的API,方便用户配置脱机下载完成控制蜂鸣器响声;\r\n\
+  3.增加Keil SN唯一识别码;\r\n\
+  V2.2.1 \r\n\
+  1.修复使用RTT时关闭串口，会导致下载程序失败的问题;\r\n\
+  2.修复不打开虚拟串口，无法进行脱机下载的问题;\r\n\
+  3.修复在线下载后，容易误触发脱机下载的问题;\r\n\
+  V2.2.0 \r\n\
+  1.删除flm_config.py文件;\r\n\
+  2.增加拖拽下载配置文件drag_download.py;\r\n\
+  3.增加脱机下载配置文件offline_download.py;\r\n\
+  V2.1.2 \r\n\
+  1.增加多个固件批量脱机下载功能，支持外部nor flash下载;\r\n\
   V2.1.1 \r\n\
-  1.优化RTTView,解决数据溢出问题;\r\n\
+  1.更新VID PID;\r\n\
+  2.优化RTTView,解决数据溢出问题;\r\n\
   V2.1.0 \r\n\
   1.增加RTTView;\r\n\
   V2.0.1 \r\n\
@@ -45,7 +66,7 @@ static const TCHAR VERSION[] =
 
 static const TCHAR driver_num_buf[4] = {DEV_RAM + '0', ':', '/', '\0'};
 static const char *show_error_string(FRESULT fresult);
-
+char expected_content[64];
 FRESULT flash_mount_fs(void)
 {
     FRESULT fresult;
@@ -63,69 +84,7 @@ FRESULT flash_mount_fs(void)
             printf("Failed to change drive, cause: %s\n", show_error_string(fresult));
             return fresult;
         }
-        // 遍历并删除 MicroLink*.rbl 文件
-        if (f_opendir(&dir, "") == FR_OK) {
-            while (f_readdir(&dir, &fno) == FR_OK && fno.fname[0]) {
-                if (strncmp(fno.fname, "MicroLink", 9) == 0 && strstr(fno.fname, ".rbl")) {
-                    printf("Deleting file: %s\n", fno.fname);
-                    f_unlink(fno.fname);
-                }
-            }
-            f_closedir(&dir);
-        }
-        // 检查 version.txt 是否存在
-        fresult = f_open(&file, "version.txt", FA_READ | FA_OPEN_EXISTING);
-        if (fresult == FR_OK) {
-            char buffer[8] = {0};  // 存储读取的前 8 个字节
-            UINT br;
-    
-            f_read(&file, buffer, sizeof(buffer), &br);
-            f_close(&file);
-    
-            // 检查是否成功读取 8 字节，且内容不同
-            if (br != 8 || memcmp(buffer, VERSION, 8) != 0) {
-                // 重新写入 version.txt
-                fresult = f_open(&file, "version.txt", FA_WRITE | FA_CREATE_ALWAYS);
-                if (fresult == FR_OK) {
-                    f_write(&file, VERSION, strlen(VERSION), &bw);
-                    f_close(&file);
-                    printf("version.txt updated successfully\n");
-                } else {
-                    printf("Failed to update version.txt, cause: %s\n", show_error_string(fresult));
-                }
-            }
-        } else if (fresult == FR_NO_FILE) {
-            // 文件不存在，创建 version.txt
-            fresult = f_open(&file, "version.txt", FA_WRITE | FA_CREATE_ALWAYS);
-            if (fresult == FR_OK) {
-                f_write(&file, VERSION, strlen(VERSION), &bw);
-                f_close(&file);
-                printf("version.txt created successfully\n");
-            } else {
-                printf("Failed to create version.txt, cause: %s\n", show_error_string(fresult));
-            }
-        } else {
-            printf("Failed to open version.txt, cause: %s\n", show_error_string(fresult));
-        }
-
-        // 检查 HTM.txt 是否存在
-        fresult = f_open(&file, "MBED.HTM", FA_READ);
-        if (fresult == FR_NO_FILE) {
-          // 创建 HTM.txt 文件
-          fresult = f_open(&file, "MBED.HTM", FA_WRITE | FA_CREATE_ALWAYS);
-          if (fresult == FR_OK) {
-              f_write(&file, HTML, strlen(HTML), &bw);
-              f_close(&file);
-              printf("MBED.HTM created successfully\n");
-          } else {
-              printf("Failed to create MBED.HTM, cause: %s\n", show_error_string(fresult));
-          }   
-        }            
-    } else {
-
-          printf("Failed to format SD card, cause: %s\n", show_error_string(fresult));     
     }
-    
     return fresult;
 }
 

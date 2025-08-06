@@ -17,7 +17,9 @@ volatile PikaObj *__pikaMain;
 PikaObj *pikaPythonInit(void){
     pika_platform_printf("======[pikapython packages installed]======\r\n");
     pika_printVersion();
+    pika_platform_printf("PikaStdDevice===v2.4.6\r\n");
     pika_platform_printf("PikaStdLib===v1.13.4\r\n");
+    pika_platform_printf("time===v0.2.2\r\n");
     pika_platform_printf("===========================================\r\n");
     PikaObj* pikaMain = newRootObj("pikaMain", New_PikaMain);
     __pikaMain = pikaMain;
@@ -30,7 +32,9 @@ PikaObj *pikaPythonInit(void){
             "import load\n"
             "import ym\n"
             "import RTTView\n"
-            "print('hello pikapython!')\n"
+            "import SystemView\n"
+            "import cmd\n"
+            "print('hello Microlink!')\n"
             "\n");
 #else 
     obj_runModule((PikaObj*)pikaMain, "main");

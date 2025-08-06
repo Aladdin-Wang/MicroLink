@@ -78,7 +78,7 @@ __WEAK void SWJ_Sequence (uint32_t count, const uint8_t *data) {
     } else {
       PIN_SWDIO_TMS_CLR();
     }
-    SW_CLOCK_CYCLE();
+    SW_CLOCK_CYCLE();  
     val >>= 1;
     n--;
   }

@@ -80,7 +80,6 @@ void set_volume_label(uint8_t *root_dir, const char *label) {
                 if (rom_xpi_nor_program(BOARD_APP_XPI_NOR_XPI_BASE, xpi_xfer_channel_auto, &s_xpi_nor_config, (uint32_t *)root_dir, (FAT_ON_CHIP_FLASH_OFFSET + DISK_BLOCK_SIZE*rootDirStartSector), DISK_BLOCK_SIZE) != status_success) {
                     return;
                 }
-                printf("Updated volume label to: %.11s\n", entry->name);
             }
             return;
         }
@@ -99,11 +98,9 @@ void set_volume_label(uint8_t *root_dir, const char *label) {
             if (rom_xpi_nor_program(BOARD_APP_XPI_NOR_XPI_BASE, xpi_xfer_channel_auto, &s_xpi_nor_config, (uint32_t *)root_dir, (FAT_ON_CHIP_FLASH_OFFSET + DISK_BLOCK_SIZE*rootDirStartSector), DISK_BLOCK_SIZE) != status_success) {
                 return;
             }
-            printf("Created new volume label: %.11s\n", entry->name);
             return;
         }
     }
-    printf("Error: No space available for volume label!\n");
 }
  
 
@@ -141,20 +138,20 @@ int usbd_msc_sector_read(uint8_t busid, uint8_t lun, uint32_t sector, uint8_t *b
               }
               set_volume_label(rootDirBuffer,g_board_info.board_vendor);                                      
           } 
-          uint32_t dataStartSector = rootDirStartSector + rootDirSectors;
-          printf("\n===== Boot Sector Info =====\n");
-          printf("Bytes Per Sector: %u\n", boot->bytesPerSector);
-          printf("Sectors Per Cluster: %u\n", boot->sectorsPerCluster);
-          printf("Reserved Sectors: %u\n", boot->reservedSectors);
-          printf("Number of FATs: %u\n", boot->numFATs);
-          printf("Root Entry Count: %u\n", boot->rootEntryCount);
-          printf("FAT Size (sectors): %u\n", boot->fatSize16);
-          printf("Total Sectors: %u\n", totalSectors);
-          printf("Root Dir Start Sector: %u\n", rootDirStartSector);
-          printf("Root Dir Size (sectors): %u\n", rootDirSectors);
-          printf("Data Start Sector: %u\n", dataStartSector);                      
-          printf("fileSystemType: %.8s\n", boot->fileSystemType);
-          printf("===================================\n");
+          //uint32_t dataStartSector = rootDirStartSector + rootDirSectors;
+          //printf("\n===== Boot Sector Info =====\n");
+          //printf("Bytes Per Sector: %u\n", boot->bytesPerSector);
+          //printf("Sectors Per Cluster: %u\n", boot->sectorsPerCluster);
+          //printf("Reserved Sectors: %u\n", boot->reservedSectors);
+          //printf("Number of FATs: %u\n", boot->numFATs);
+          //printf("Root Entry Count: %u\n", boot->rootEntryCount);
+          //printf("FAT Size (sectors): %u\n", boot->fatSize16);
+          //printf("Total Sectors: %u\n", totalSectors);
+          //printf("Root Dir Start Sector: %u\n", rootDirStartSector);
+          //printf("Root Dir Size (sectors): %u\n", rootDirSectors);
+          //printf("Data Start Sector: %u\n", dataStartSector);                      
+          //printf("fileSystemType: %.8s\n", boot->fileSystemType);
+          //printf("===================================\n");
 
       }
     }

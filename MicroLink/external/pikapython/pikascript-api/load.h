@@ -17,7 +17,8 @@
 
 PikaObj *New_load(Args *args);
 
-void load_bin(PikaObj *self, PikaTuple* val);
-void load_hex(PikaObj *self, PikaTuple* val);
+int load_bin(PikaObj *self, PikaTuple* val);
+int load_hex(PikaObj *self, PikaTuple* val);
+void load_offline(PikaObj *self, PikaTuple* val);
 
 #endif

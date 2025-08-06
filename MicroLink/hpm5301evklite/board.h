@@ -50,6 +50,15 @@
 #define BOARD_APP_UART_TX_DMA_REQ HPM_DMA_SRC_UART3_TX
 #endif
 
+#ifndef BOARD_BOOT_UART_BASE
+#define BOARD_BOOT_UART_BASE       HPM_UART2
+#define BOARD_BOOT_UART_IRQ        IRQn_UART2
+#define BOARD_BOOT_UART_BAUDRATE   (115200UL)
+#define BOARD_BOOT_UART_CLK_NAME   clock_uart2
+#define BOARD_BOOT_UART_RX_DMA_REQ HPM_DMA_SRC_UART2_RX
+#define BOARD_BOOT_UART_TX_DMA_REQ HPM_DMA_SRC_UART2_TX
+#endif
+
 #define BOARD_APP_UART_BREAK_SIGNAL_PIN IOC_PAD_PA26
 
 /* uart lin sample section */
@@ -136,6 +145,10 @@
 #define BOARD_EN_GPIO_INDEX GPIO_DI_GPIOB
 #define BOARD_EN_GPIO_PIN   10
 
+#define BOARD_DE_EN_GPIO_CTRL  HPM_GPIO0
+#define BOARD_DE_EN_GPIO_INDEX GPIO_DI_GPIOB
+#define BOARD_DE_EN_GPIO_PIN   11
+
 /* 12V Power Enable*/
 #define BOARD_12V_EN_GPIO_CTRL  HPM_GPIO0
 #define BOARD_12V_EN_GPIO_INDEX GPIO_DI_GPIOA
@@ -153,6 +166,7 @@
 #define BOARD_APP_GPIO_CTRL  HPM_GPIO0
 #define BOARD_APP_GPIO_INDEX GPIO_DI_GPIOA
 #define BOARD_APP_GPIO_PIN   3
+#define BOARD_DAP_GPIO_PIN   5
 #define BOARD_APP_GPIO_IRQ   IRQn_GPIO0_A
 #define BOARD_BUTTON_PRESSED_VALUE 1
 
@@ -187,6 +201,9 @@
 /* CALLBACK TIMER section */
 #define BOARD_CALLBACK_TIMER          (HPM_GPTMR1)
 #define BOARD_CALLBACK_TIMER_CH       0
+#define BOARD_CALLBACK_TIMER_CH1      1
+#define BOARD_CALLBACK_TIMER_CH2      2
+#define BOARD_CALLBACK_TIMER_CH3      3
 #define BOARD_CALLBACK_TIMER_IRQ      IRQn_GPTMR1
 #define BOARD_CALLBACK_TIMER_CLK_NAME (clock_gptmr1)
 
@@ -324,6 +341,7 @@ void board_init_i2c(I2C_Type *ptr);
 
 void board_init_gptmr_channel_pin(GPTMR_Type *ptr, uint32_t channel, bool as_comp);
 
+void bootloader_init_console(void);
 #if defined(__cplusplus)
 }
 #endif /* __cplusplus */

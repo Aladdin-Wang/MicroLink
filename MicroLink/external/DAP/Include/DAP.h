@@ -328,13 +328,11 @@ extern void     DAP_Setup (void);
 
 __attribute__((always_inline)) static inline
 void PIN_DELAY_SLOW (uint32_t delay) {
-  __asm__ volatile (
-  "1:\n\t"
-    "addi %0, %0, -1\n\t"    // Subtract 1 from delay
-    "bnez %0, 1b\n"          // If delay is not zero, branch to label 1
-  : "+r" (delay)             // Output operand, delay will be modified
-  );
+  volatile uint32_t count = delay;
+  while (--count);
 }
+
+
 __attribute__((always_inline)) static inline void JTAG_PIN_DELAY_SLOW (uint32_t delay) {
   volatile uint32_t count = delay;
   while (--count);
@@ -342,18 +340,11 @@ __attribute__((always_inline)) static inline void JTAG_PIN_DELAY_SLOW (uint32_t 
 
 // Fixed delay for fast clock generation
 #ifndef DELAY_FAST_CYCLES
-#define DELAY_FAST_CYCLES       0U      // Number of cycles: 0..3
+#define DELAY_FAST_CYCLES       2U      // Number of cycles: 0..3
 #endif
 __attribute__((always_inline)) static inline void PIN_DELAY_FAST (void) {
-#if (DELAY_FAST_CYCLES >= 1U)
-  __NOP();
-#endif
-#if (DELAY_FAST_CYCLES >= 2U)
-  __NOP();
-#endif
-#if (DELAY_FAST_CYCLES >= 3U)
-  __NOP();
-#endif
+  volatile uint32_t count = DELAY_FAST_CYCLES;
+  while (--count);
 }
 
 #ifdef  __cplusplus

@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<package schemaVersion="1.7.37" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.37/schema/PACK.xsd">
+  <vendor>GorgonMeducer</vendor>
+  <name>perf_counter</name>
+  <description>A dedicated performance counter mainly for micro-controllers. For Cortex-M processors, the SysTick will be used by default. The `perf_counter` shares the SysTick with users' original SysTick function(s) without interfering with it. This library will bring new functionalities, such as performance counter,` perfc_delay_us`, `perfc_delay_ms` and `clock()` service defined in `time.h`. A dedicated template is provided to port the perf_counter to different architectures or using a different Timer instead of SysTick in Cortex-M processors.</description>
+  <url>https://raw.githubusercontent.com/GorgonMeducer/perf_counter/CMSIS-Pack/cmsis-pack/</url>
+  <supportContact>https://github.com/GorgonMeducer/perf_counter/issues</supportContact>
+  <license>LICENSE</license>
+  <!-- optional license file -->
+  <!-- 
+  <license>
+  </license>
+  -->
+  
+  <repository type="git">https://github.com/GorgonMeducer/perf_counter.git</repository>
+  
+  <releases>
+    <release date="2025-07-14" version="2.5.0" tag="v2.5.0" url="https://github.com/GorgonMeducer/perf_counter/releases/download/v2.5.0/GorgonMeducer.perf_counter.2.5.0.pack">
+      Release v2.5.0
+      - Adds a helper service for coroutines
+      - Adds a coroutine based protoThread code template
+      - Adds prefix 'perfc_' to APIs and Macros
+      - Supports feed the watchdog in perfc_delay_ms(), originally called delay_ms()
+      - Supports yield from perfc_delay_ms() with coroutine's help
+      - Adds __stack_usage__() and __stack_usage_max__()
+      - Other minor changes
+    </release>
+    <release date="2024-12-08" version="2.4.0" tag="v2.4.0" url="https://github.com/GorgonMeducer/perf_counter/releases/download/v2.4.0/GorgonMeducer.perf_counter.2.4.0.pack">
+      - Avoid time roll-back in some rare cases
+      - Add macros for protoThread
+      - Some minor changes
+    </release>
+    <release date="2024-07-27" version="2.3.3" tag="v2.3.3" url="https://github.com/GorgonMeducer/perf_counter/releases/download/v2.3.3/GorgonMeducer.perf_counter.2.3.3.pack">
+      Release v2.3.3
+      - Enhance foreach() and with() with __typeof__()
+      - Always use systick_wrapper_gnu.s when Arm Compiler 6 is detected
+      - Some minor fixes
+    </release>
+    <release date="2024-07-06" version="2.3.2" tag="v2.3.2" url="https://github.com/GorgonMeducer/perf_counter/releases/download/v2.3.2/GorgonMeducer.perf_counter.2.3.2.pack">
+      Release v2.3.2
+      - Adds __perfc_sync_barrier__() and improves __cycleof__()
+      - Some minor fixes
+    </release>
+    <release date="2024-03-12" version="2.3.1" tag="v2.3.1" url="https://github.com/GorgonMeducer/perf_counter/releases/download/v2.3.1/GorgonMeducer.perf_counter.2.3.1.pack">
+      Release v2.3.1
+      - Fixed PMU-SysTick-overflow-miscounting issue
+      - Other minor changes.
+    </release>
+    <release date="2024-02-28" version="2.3.0" tag="v2.3.0" url="https://github.com/GorgonMeducer/perf_counter/releases/download/v2.3.0/GorgonMeducer.perf_counter.2.3.0.pack">
+      Release v2.3.0
+      - Support porting to a different architecture
+      - Support Armv8.1-m PMU
+          * Add __cpu_perf__() for CPI and L1 DCache miss rate
+      - Some other minor changes.
+    </release>
+    <release date="2023-10-19" version="2.2.4" tag="v2.2.4" url="https://github.com/GorgonMeducer/perf_counter/releases/download/v2.2.4/GorgonMeducer.perf_counter.2.2.4.pack">
+      - Add support for RT-Thread-nano
+      - Add an API for checking stack overflow
+      - Improve the support for the Arm Compiler 6.21
+      - Other minor updates
+    </release>
+    <release date="2023-08-30" version="2.2.3" tag="2.2.3" url="https://github.com/GorgonMeducer/perf_counter/raw/5660b13ea30005e31fa713cb4e6c6d7dbe0bcaa3/cmsis-pack/GorgonMeducer.perf_counter.2.2.3.pack">
+      - Mitigate time-rolling-back issue when calling get_system_ticks in exception handlers that have higher priorities than the SysTick_Handler.
+      - Other minor updates
+    </release>
+    <release date="2023-06-12" version="2.2.2" tag="2.2.2" url="https://github.com/GorgonMeducer/perf_counter/raw/124e98b3517aa46122ec7987c7726a065491823e/cmsis-pack/GorgonMeducer.perf_counter.2.2.2.pack">
+      - Add __cpu_time__
+      - Support reconfiguring the SysTick
+      - Suppress warnings
+      - Other minor updates
+    </release>
+    <release date="2023-05-19" version="2.2.1" tag="2.2.1" url="https://github.com/GorgonMeducer/perf_counter/raw/748eba059e3d05239cc27dd74394b605b9cf660a/cmsis-pack/GorgonMeducer.perf_counter.2.2.1.pack">
+      - Update perfc_is_time_out_ms and perf_is_time_out_us
+    </release>
+    <release date="2023-05-18" version="2.2.0" tag="2.2.0" url="https://github.com/GorgonMeducer/perf_counter/raw/8ecc7b436a99cfd68d4eef3302d7d4de56554abb/cmsis-pack/GorgonMeducer.perf_counter.2.2.0.pack">
+      - Enhance Timer Services
+      - Other minor changes
+    </release>
+    <release date="2023-03-19" version="2.1.0" tag="2.1.0" url="https://github.com/GorgonMeducer/perf_counter/raw/9c06e5bc585c64df16d80e3598d568be554aadd1/cmsis-pack/GorgonMeducer.perf_counter.2.1.0.pack">
+      - Update stop_cycle_counter prototype to solve return-value-overflow issue
+      - Provide timer service for EventRecorder automatically
+      - Remove the bundle from cmsis-pack
+    </release>
+    <release date="2023-03-02" version="2.0.0" tag="2.0.0" url="https://github.com/GorgonMeducer/perf_counter/raw/0c6b79b20308bb9b7d15a7c65f0fe91174c78061/cmsis-pack/GorgonMeducer.perf_counter.2.0.0.pack">
+      - Add Coremark
+    </release>
+    <release date="2023-02-09" version="1.9.11" tag="1.9.11" url="https://github.com/GorgonMeducer/perf_counter/raw/659eb12026977d81391d90290706f9ac3c8efe7e/cmsis-pack/GorgonMeducer.perf_counter.1.9.11.pack">
+      - Fix the source variant support for Armv8-M processors
+      - Other minor fixes
+    </release>
+    <release date="2022-11-01" version="1.9.10" tag="1.9.10" url="https://github.com/GorgonMeducer/perf_counter/raw/1115e60d61940b7da833c841d2f4e1bbbcb22793/cmsis-pack/GorgonMeducer.perf_counter.1.9.10.pack">
+      - Fix the support for RT-Thread
+      - Improve the way to import systick wrapper
+      - Add get_system_us to avoid 64bit integer divider.
+      - Minor Update
+    </release>
+    <release date="2022-08-10" version="1.9.8" tag="1.9.8" url="https://github.com/GorgonMeducer/perf_counter/raw/fbc8e94b0d78abb959462350d15df6885be70d27/cmsis-pack/GorgonMeducer.perf_counter.1.9.8.pack">
+      - Improve delay accuracy
+      - Fix RT-Thread stack-fully-used issue
+      - introduce macro __PERF_COUNTER_CFG_USE_SYSTICK_WRAPPER__
+    </release>
+    <release date="2022-06-15" version="1.9.6" tag="1.9.6" url="https://github.com/GorgonMeducer/perf_counter/raw/88c8db41730d0f4ab84708e828398ecaab434e24/cmsis-pack/GorgonMeducer.perf_counter.1.9.6.pack">
+      - Add RT-Thread Package
+      - Add new API update_perf_counter() for notifying perf_counter that SystemCoreClock has been updated
+      - Add a macro __perf_counter_printf__ to retarget printf
+      - Add a macor __PERF_COUNT_PLATFORM_SPECIFIC_HEADER__ for people to insert a platform specific header file.
+      - Add Doxygen
+      - Other minor changes
+    </release>
+    <release date="2022-05-20" version="1.9.5" tag="1.9.5" url="https://github.com/GorgonMeducer/perf_counter/raw/734e2ac7e00ad71a591aeef37f47001543de4d6e/cmsis-pack/GorgonMeducer.perf_counter.1.9.5.pack">
+      - Add support for Cortex-M85, Star-MC1 and all other Armv8.1-M processors
+      - Update Readme
+    </release>
+    <release date="2022-04-13" version="1.9.4" tag="1.9.4" url="https://github.com/GorgonMeducer/perf_counter/raw/37dd7f759b6a7d03011ecd6804dc9f702d7ce03f/cmsis-pack/GorgonMeducer.perf_counter.1.9.4.pack">
+      - Mitigate some clang warnings
+      - Minor update for RTOS support
+    </release>
+    <release date="2022-02-26" version="1.9.3" tag="1.9.3" url="https://github.com/GorgonMeducer/perf_counter/raw/46c4b7057968fae0c0285c8e3a31d6be9fb98ee0/cmsis-pack/GorgonMeducer.perf_counter.1.9.3.pack">
+      - Fix CONNECT macro cannot connect two parameters issue.
+      - Add UNUSED_PARAM
+      - Add support for C++ env
+      - Other minor updates
+    </release>
+    <release date="2022-02-14" version="1.9.2" tag="1.9.2" url="https://github.com/GorgonMeducer/perf_counter/raw/46b3f8bde2a42e253951a395370d6bed965bb2b1/cmsis-pack/GorgonMeducer.perf_counter.1.9.2.pack">
+      - Add API get_system_ms() to avoid int64_t divide operation.
+      - Add API delay_ms()
+    </release>
+    <release date="2022-02-13" version="1.9.1" tag="1.9.1" url="https://github.com/GorgonMeducer/perf_counter/raw/1f4bf7fcab579d5a3018798ec0f072d8588b2886/cmsis-pack/GorgonMeducer.perf_counter.1.9.1.pack">
+      - Add preprocessing in perf_counter.h to detect whether GNU extension is enabled or not.
+      - Enhance RTOS support
+      - Add macro __PERF_COUNTER__ in RTE_Components.h for compile-time detection.
+    </release>
+    <release date="2022-01-29" version="1.8.2" tag="1.8.2" url="https://github.com/GorgonMeducer/perf_counter/raw/1607c021f50d0305394870ca34b5412d949aaa4f/cmsis-pack/GorgonMeducer.perf_counter.1.8.2.pack">
+      - Fix a bug found in __cycleof__. The __cycle_counter__ was not updated with the measure result.
+      - Add macros for version info.
+    </release>
+    
+  </releases>
+
+  <keywords>
+    <!-- keywords for indexing -->
+    <keyword>Cortex-M</keyword>
+    <keyword>SysTick</keyword>
+    <keyword>Performance Analaysis</keyword>
+  </keywords>
+  
+    <conditions> 
+    
+        <condition id="Arm Compiler 6">
+            <description>Arm Compiler 6 (armclang).</description>
+            <accept Tcompiler="ARMCC" Toptions="AC6"/>
+            <accept Tcompiler="ARMCC" Toptions="AC6LTO"/>
+        </condition>
+    
+        <condition id="Arm Compiler">
+            <description>Arm Compiler 5 (armcc) or Arm Compiler 6 (armclang).</description>
+            <accept Tcompiler="ARMCC" Toptions="AC6"/>
+            <accept Tcompiler="ARMCC" Toptions="AC6LTO"/>
+            <accept Tcompiler="ARMCC" Toptions="AC5"/>
+        </condition>
+        <condition id="Arm GCC">
+            <description>GNU Tools for Arm Embedded Processors.</description>
+            <accept Tcompiler="GCC"/>
+            <accept Tcompiler="CLANG"/>
+        </condition>
+
+        <condition id="Armv8.1-M Processors">
+            <accept  Dcore="ARMV81MML"/>
+            <accept  Dcore="Cortex-M55"/>
+            <accept  Dcore="Cortex-M85"/>
+            <accept  Dcore="Cortex-M52"/>
+        </condition>
+
+        
+        <condition id="Armv8-M Processors">
+            <accept  Dcore="ARMV8MBL"/>
+            <accept  Dcore="ARMV8MML"/>
+
+            <accept  Dcore="Star-MC1"/>
+            <accept  Dcore="Cortex-M23"/>
+            <accept  Dcore="Cortex-M33"/>
+            <accept  Dcore="Cortex-M35P"/>
+            
+            <accept condition="Armv8.1-M Processors"/>
+
+        </condition>
+
+        <condition id="Previous Generation Cortex-M Processors">
+            <accept  Dcore="Cortex-M0"/>
+            <accept  Dcore="Cortex-M0+"/>
+            <accept  Dcore="Cortex-M1"/>
+            <accept  Dcore="Cortex-M3"/>
+            <accept  Dcore="Cortex-M4"/>
+            <accept  Dcore="Cortex-M7"/>
+            <accept  Dcore="SC000"/>
+            <accept  Dcore="SC300"/>
+        </condition>
+
+        <condition id="Cortex-M Processors">
+            <description>Support All Cortex-M based processors</description>
+            <accept condition="Previous Generation Cortex-M Processors"/>
+            <accept condition="Armv8-M Processors"/>
+        </condition>
+
+        <condition id="CMSIS-CORE">
+            <description>Require CMSIS-CORE Support</description>
+            <require Cclass="CMSIS" Cgroup="CORE"/>
+        </condition>
+        
+        <condition id="RTX5 Patch">
+            <description>Require RTX5 Support</description>
+            <accept Cclass="CMSIS" Cgroup="RTOS2" Csub="Keil RTX5" Cvariant="Source"/>
+            <require Cclass="Utilities" Cgroup="perf_counter" Csub="Core"/>
+        </condition>
+        
+        <condition id="FreeRTOS Patch">
+            <description>Require FreeRTOS Support</description>
+            <accept Cbundle="FreeRTOS" Cclass="RTOS" Cgroup="Core"/>
+            <require Cclass="Utilities" Cgroup="perf_counter" Csub="Core"/>
+        </condition>
+        
+        <condition id="perf_counter">
+            <description>Require Perf_Counter Core</description>
+            <require Cclass="Utilities" Cgroup="perf_counter" Csub="Core"/>
+        </condition>
+
+        <condition id="PMU Devices">
+            <description>Require Perf_Counter Core</description>
+            <require condition="perf_counter" />
+            <require condition="Armv8.1-M Processors" />
+        </condition>
+
+        <condition id="Cortex-M Arm GCC">
+            <description>Compile Cortex-M Processors with GNU Tools for Arm Embedded Processors.</description>
+            <require condition="Arm GCC"/>
+            <require condition="Cortex-M Processors"/>
+        </condition>
+        <condition id="Cortex-M Arm Compiler">
+            <description>Compile Cortex-M Processors with GNU Tools for Arm Embedded Processors.</description>
+            <require condition="Arm Compiler"/>
+            <require condition="Cortex-M Processors"/>
+        </condition>
+        
+        <condition id="Previous Generation Cortex-M Arm Compiler">
+            <description>Compile Cortex-M Processors with GNU Tools for Arm Embedded Processors.</description>
+            <require condition="Arm Compiler"/>
+            <require condition="Previous Generation Cortex-M Processors"/>
+        </condition>
+        
+        <condition id="Armv8-M Arm Compiler">
+            <description>Compile Cortex-M Processors with GNU Tools for Arm Embedded Processors.</description>
+            <require condition="Arm Compiler"/>
+            <require condition="Armv8-M Processors"/>
+        </condition>
+        
+
+        <condition id="Cortex-M Arm Compiler CMSIS-CORE">
+            <description>Compile Cortex-M Processors with GNU Tools for Arm Embedded Processors.</description>
+            <require condition="Arm Compiler"/>
+            <require condition="Cortex-M Processors"/>
+            <require condition="CMSIS-CORE"/>
+        </condition>
+        
+        <condition id="Default Porting">
+            <description>Reject PMU and other portings</description>
+            <deny Cclass="Utilities" Cgroup="perf_counter" Csub="Porting" Cvariant="PMU" />
+            <deny Cclass="Utilities" Cgroup="perf_counter" Csub="Porting" Cvariant="User Defined" />
+        </condition>
+        
+        <condition id="Previous Generation Cortex-M Arm Compiler CMSIS-CORE Default Porting">
+            <description>Compile Cortex-M Processors with Arm Compiler 5.</description>
+            <require Tcompiler="ARMCC" Toptions="AC5"/>
+            <require condition="Previous Generation Cortex-M Processors"/>
+            <require condition="CMSIS-CORE"/>
+            <require condition="Default Porting"/>
+        </condition>
+        
+        <condition id="Armv8-M Arm Compiler CMSIS-CORE Default Porting">
+            <description>Compile Cortex-M Processors with Arm Compiler 6.</description>
+            <require condition="Arm Compiler 6"/>
+            <require condition="Cortex-M Processors"/>
+            <require condition="CMSIS-CORE"/>
+            <require condition="Default Porting"/>
+        </condition>
+        
+        <condition id="Cortex-M Arm GCC CMSIS-CORE Default Porting">
+            <description>Compile Cortex-M Processors with GNU Tools for Arm Embedded Processors.</description>
+            <require condition="Arm GCC"/>
+            <require condition="Cortex-M Processors"/>
+            <require condition="CMSIS-CORE"/>
+            <require condition="Default Porting"/>
+        </condition>
+        
+    </conditions>
+  <!-- apis section (optional - for Application Programming Interface descriptions) -->
+  <!-- 
+  <apis>
+  </apis>
+  -->
+
+  <!-- boards section (mandatory for Board Support Packs) -->
+  <!-- 
+  <boards>
+  </boards>
+  -->
+
+  <!-- devices section (mandatory for Device Family Packs) -->
+  <!--
+  <devices>
+  </devices>
+  -->
+
+  <!-- examples section (optional for all Software Packs)-->
+  <!--
+  <examples>
+  </examples>
+  -->
+  
+  <!-- conditions section (optional for all Software Packs)-->
+  <!--
+  <conditions>
+  </conditions>
+  -->
+
+    <components>
+            <component Cclass="Utilities" Cversion="2.5.0" Cgroup="perf_counter" Csub="Core" Cvariant="Source" isDefaultVariant="true" condition="CMSIS-CORE">
+              <description>A dedicated performance counter for Cortex-M systick.</description>
+              <files>
+                <file category="preIncludeGlobal"   name="perfc_common.h"/>
+                <file category="header"             name="perf_counter.h"/>
+                <file category="sourceC"            name="perf_counter.c" />
+                <file category="sourceC"            name="perfc_port_default.c" />
+                <file category="sourceAsm"          name="systick_wrapper_ual.s"        condition="Previous Generation Cortex-M Arm Compiler CMSIS-CORE Default Porting"/>
+                <file category="sourceAsm"          name="systick_wrapper_gcc.S"        condition="Cortex-M Arm GCC CMSIS-CORE Default Porting"/>
+                <file category="sourceAsm"          name="systick_wrapper_gnu.s"        condition="Armv8-M Arm Compiler CMSIS-CORE Default Porting"/>
+              </files>
+              <RTE_Components_h>
+
+#define __PERF_COUNTER__ 1
+              </RTE_Components_h>
+
+              <Pre_Include_Global_h>
+
+#define __PERF_COUNTER_CFG_USE_SYSTICK_WRAPPER__ 1
+              </Pre_Include_Global_h>
+            </component>
+
+            <component Cclass="Utilities" Cversion="2.5.0" Cgroup="perf_counter" Csub="Core" Cvariant="SourceNoWrapper" isDefaultVariant="false" condition="CMSIS-CORE">
+              <description>A dedicated performance counter for Cortex-M systick.</description>
+              <files>
+                <file category="preIncludeGlobal"   name="perfc_common.h"/>
+                <file category="header"             name="perf_counter.h"/>
+                <file category="sourceC"            name="perf_counter.c" />
+                <file category="sourceC"            name="perfc_port_default.c" />
+              </files>
+              <RTE_Components_h>
+
+#define __PERF_COUNTER__ 1
+              </RTE_Components_h>
+            </component>
+            <component Cclass="Utilities" Cversion="1.2.0" Cgroup="perf_counter" Csub="Porting" Cvariant="User Defined" isDefaultVariant="false" condition="perf_counter">
+              <description>A user define system timer</description>
+              <files>
+                <file category="sourceC"        name="template/perfc_port_user.c" attr="config"  version="1.2.0"/>
+                <file category="header"         name="template/perfc_port_user.h" attr="config"  version="1.2.0"/>
+              </files>
+              <RTE_Components_h>
+
+#define __RTE_PERFC_PORTING_USER_DEFINED__ 1
+              </RTE_Components_h>
+
+              <Pre_Include_Global_h>
+#define __PERFC_USE_PORTING__                           1
+#define __PERFC_USE_USER_CUSTOM_PORTING__               1
+#define __PERFC_CFG_DISABLE_DEFAULT_SYSTICK_PORTING__   1
+#define __PERFC_CFG_PORTING_INCLUDE__                   "perfc_port_user.h"
+
+              </Pre_Include_Global_h>
+            </component>
+
+            <component Cclass="Utilities" Cversion="1.2.0" Cgroup="perf_counter" Csub="Porting" Cvariant="PMU" isDefaultVariant="true" condition="PMU Devices">
+              <description>Using the Performande Monitor Unit</description>
+              <files>
+                <file category="sourceC"        name="perfc_port_pmu.c"/>
+                <file category="header"         name="perfc_port_pmu.h"/>
+              </files>
+              <RTE_Components_h>
+
+#define __RTE_PERFC_PORTING_PMU__ 1
+              </RTE_Components_h>
+
+              <Pre_Include_Global_h>
+#define __PERFC_USE_PORTING__                           1
+#define __PERFC_USE_PMU_PORTING__                       1
+#define __PERFC_CFG_DISABLE_DEFAULT_SYSTICK_PORTING__   1
+#define __PERFC_CFG_PORTING_INCLUDE__                   "perfc_port_pmu.h"
+
+              </Pre_Include_Global_h>
+            </component>
+
+
+            <component Cclass="Utilities" Cgroup="perf_counter" Csub="Benchmark" Cvariant="Coremark" Cversion="1.1.3" condition="perf_counter">
+              <description>Coremark</description>
+              <files>
+                <file category="sourceC"    name="benchmark/coremark_port/core_main.c"/>
+                <file category="sourceC"    name="benchmark/coremark_port/core_portme.c" attr="config"  version="1.1.3" />
+                <file category="header"     name="benchmark/coremark_port/core_portme.h" attr="config"  version="1.1.3" />
+                
+                <file category="include"    name="benchmark/coremark/" />
+                <file category="sourceC"    name="benchmark/coremark/core_list_join.c"/>
+                <file category="sourceC"    name="benchmark/coremark/core_matrix.c"/>
+                <file category="sourceC"    name="benchmark/coremark/core_state.c"/>
+                <file category="sourceC"    name="benchmark/coremark/core_util.c"/>
+              </files>
+              <Pre_Include_Global_h>
+              
+//! \brief Enable Coremark
+#define __PERF_COUNTER_COREMARK__   1
+#define MAIN_HAS_NOARGC             1
+#define MAIN_HAS_NORETURN           1
+#define HAS_FLOAT                   1
+              </Pre_Include_Global_h>
+            </component>
+
+            <component Cclass="Utilities" Cversion="2.5.0" Cgroup="perf_counter" Csub="RTX5 Patch" condition="RTX5 Patch">
+              <description>A Patch for RTX5</description>
+              <files>
+                <file category="source"     name="os/perf_os_patch_rtx5.c"/>
+              </files>
+              <Pre_Include_Global_h>
+              
+//! \brief Enable RTOS Patch for perf_counter
+#define __PERF_CNT_USE_RTOS__ 1
+              </Pre_Include_Global_h>
+            </component>
+
+            <component Cclass="Utilities" Cversion="2.5.0" Cgroup="perf_counter" Csub="FreeRTOS Patch" condition="perf_counter">
+              <description>A Patch for FreeRTOS</description>
+              <files>
+                <file category="sourceC"    name="os/perf_os_patch_freertos.c"/>
+              </files>
+              <Pre_Include_Global_h>
+//! \brief Enable RTOS Patch for perf_counter
+#define __PERF_CNT_USE_RTOS__ 1
+            
+#define traceTASK_SWITCHED_OUT_DISABLE  
+#define traceTASK_SWITCHED_IN_DISABLE
+
+extern void __freertos_evr_on_task_switched_out (void *ptTCB);
+extern void __freertos_evr_on_task_switched_in(void *ptTCB, unsigned int uxTopPriority) ;
+
+#   define traceTASK_SWITCHED_OUT()                                             \
+        __freertos_evr_on_task_switched_out(pxCurrentTCB)
+#   define traceTASK_SWITCHED_IN()                                              \
+        __freertos_evr_on_task_switched_in(pxCurrentTCB, uxTopReadyPriority)
+
+              </Pre_Include_Global_h>
+            </component>
+            
+            <component Cclass="Utilities" Cversion="2.5.0" Cgroup="perf_counter" Csub="RT-Thread Patch" condition="perf_counter">
+              <description>A Patch for RT-Thread</description>
+              <files>
+                <file category="sourceC"    name="os/perf_os_patch_rt_thread.c"/>
+              </files>
+              <Pre_Include_Global_h>
+              
+//! \brief Enable RTOS Patch for perf_counter
+#define __PERF_CNT_USE_RTOS__ 1
+
+struct rt_thread;
+extern void __rt_thread_scheduler_hook(struct rt_thread *from, struct rt_thread *to);
+
+#define __on_rt_scheduler_hook(from, to)  __rt_thread_scheduler_hook((from), (to))
+
+              </Pre_Include_Global_h>
+            </component>
+            
+            <component Cclass="Utilities" Cversion="2.5.0" Cgroup="perf_counter" Csub="ThreadX Patch" condition="perf_counter">
+              <description>A Patch for ThreadX</description>
+              <files>
+                <file category="sourceC"    name="os/perf_os_patch_threadx.c"/>
+              </files>
+              <Pre_Include_Global_h>
+//! \brief Enable RTOS Patch for perf_counter
+#define __PERF_CNT_USE_RTOS__ 1
+
+#define TX_ENABLE_EXECUTION_CHANGE_NOTIFY
+
+              </Pre_Include_Global_h>
+            </component>
+
+        <component Cclass="Language Extension" Cgroup="Coroutine" Cversion="1.0.0" condition="perf_counter">
+          <description>A C software infrastructure for coroutines.</description>
+          <files>
+            <file category="preIncludeGlobal"   name="__perfc_task_common.h"/>
+            <file category="sourceC"            name="perfc_task_coroutine.c"/>
+          </files>
+          <Pre_Include_Global_h>
+#define __C_LANGUAGE_EXTENSIONS_PERFC_COROUTINE__  1
+          </Pre_Include_Global_h>
+        </component>
+
+        <component Cclass="Language Extension" Cgroup="protoThread" Cversion="1.1.0" condition="perf_counter">
+          <description>A C software infrastructure for coroutines.</description>
+          <files>
+            <file category="header"            name="perfc_task_pt.h"/>
+          </files>
+          <Pre_Include_Global_h>
+#define __C_LANGUAGE_EXTENSIONS_PERFC_PT__  1
+          </Pre_Include_Global_h>
+        </component>
+
+    </components>
+  
+  <!-- optional taxonomy section for defining new component Class and Group names -->
+
+  <taxonomy>
+    <description Cclass="Utilities" Cgroup="perf_counter" doc="documents/Doxygen/html/index.html">A dedicated performance counter for Cortex-M systick.</description>
+  </taxonomy>
+
+  
+</package>

@@ -82,6 +82,7 @@ void init_gpio_pins(void)
     uint32_t pad_ctl = IOC_PAD_PAD_CTL_PE_SET(1) | IOC_PAD_PAD_CTL_PS_SET(0) | IOC_PAD_PAD_CTL_HYS_SET(1);
     HPM_IOC->PAD[IOC_PAD_PA03].FUNC_CTL = IOC_PA03_FUNC_CTL_GPIO_A_03;
     HPM_IOC->PAD[IOC_PAD_PA03].PAD_CTL = pad_ctl;
+
 }
 
 void init_spi_pins(SPI_Type *ptr)

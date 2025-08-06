@@ -101,6 +101,7 @@ void uart_isr(void)
     if (uart_is_txline_idle(UART_BASE)) {
         uart_clear_txline_idle_flag(UART_BASE);
         gpio_write_pin(BOARD_EN_GPIO_CTRL, BOARD_EN_GPIO_INDEX, BOARD_EN_GPIO_PIN, 0);
+        gpio_write_pin(BOARD_DE_EN_GPIO_CTRL, BOARD_DE_EN_GPIO_INDEX, BOARD_DE_EN_GPIO_PIN, 0);
     }
 }
 
@@ -161,7 +162,12 @@ static void chry_dap_usb2uart_uart_config_callback(struct cdc_line_coding *line_
     uart_default_config(UART_BASE, &config);
     config.baudrate = line_coding->dwDTERate;
     config.parity = line_coding->bParityType;
-    config.word_length = line_coding->bDataBits - 5;
+    if(line_coding->bDataBits != 0){
+      config.word_length = line_coding->bDataBits - 5;
+    }else{
+      config.word_length = 3;
+    }
+
     config.num_of_stop_bits = line_coding->bCharFormat;
     config.fifo_enable = true;
     config.dma_enable = true;
@@ -171,12 +177,12 @@ static void chry_dap_usb2uart_uart_config_callback(struct cdc_line_coding *line_
     config.rxidle_config.detect_enable = true;
     config.rxidle_config.detect_irq_enable = true;
     config.rxidle_config.idle_cond = uart_rxline_idle_cond_state_machine_idle;
-    config.rxidle_config.threshold = 30U; /* 20bit */
+    config.rxidle_config.threshold = 20U; /* 20bit */
 
     config.txidle_config.detect_enable = true;
     config.txidle_config.detect_irq_enable  = true;
     config.txidle_config.idle_cond = uart_rxline_idle_cond_state_machine_idle;
-    config.txidle_config.threshold = 3U;
+    config.txidle_config.threshold = 10U;
 
     uart_init(UART_BASE, &config);
     uart_init_txline_idle_detection(UART_BASE, config.txidle_config);
@@ -195,6 +201,8 @@ static void chry_dap_usb2uart_uart_send_bydma(uint8_t *data, uint16_t len)
         return;
     }
     gpio_write_pin(BOARD_EN_GPIO_CTRL, BOARD_EN_GPIO_INDEX, BOARD_EN_GPIO_PIN, 1);
+    gpio_write_pin(BOARD_DE_EN_GPIO_CTRL, BOARD_DE_EN_GPIO_INDEX, BOARD_DE_EN_GPIO_PIN, 1);
+
     g_uart_tx_transfer_length = len;
     buf_addr = core_local_mem_to_sys_address(HPM_CORE0, (uint32_t)data);
     dma_mgr_set_chn_src_addr(tx_resource, buf_addr);
@@ -235,7 +243,7 @@ static hpm_stat_t board_uart_dma_config(void)
                 return status_fail;
             }
             rx_descriptors[i].ctrl &= ~DMA_MGR_INTERRUPT_MASK_TC;
-            printf("linker_addr:0x%08x  %d\n", (uint32_t)&rx_descriptors[i], i);
+           // printf("linker_addr:0x%08x  %d\n", (uint32_t)&rx_descriptors[i], i);
         }
         chg_config.dst_addr = core_local_mem_to_sys_address(BOARD_RUNNING_CORE, (uint32_t)uart_rx_buf[0]);
         chg_config.linked_ptr = core_local_mem_to_sys_address(BOARD_RUNNING_CORE, (uint32_t)&rx_descriptors[0]);

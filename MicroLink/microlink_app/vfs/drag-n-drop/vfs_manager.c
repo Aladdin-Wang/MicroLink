@@ -30,7 +30,7 @@
 #include "hpm_ppor_drv.h"
 
 // Set to 1 to enable debugging
-#define DEBUG_VFS_MANAGER     0
+#define DEBUG_VFS_MANAGER     1
 
 #if DEBUG_VFS_MANAGER
 #define vfs_mngr_printf    printf

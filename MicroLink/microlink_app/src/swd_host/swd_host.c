@@ -24,9 +24,8 @@
 #ifndef TARGET_MCU_CORTEX_A
 #include "target_config.h"
 #include "DAP_config.h"
-#include "DAP.h"
 #include "swd_host.h"
-
+#include "stdio.h"
 // Default NVIC and Core debug base addresses
 // TODO: Read these addresses from ROM.
 
@@ -729,6 +728,46 @@ uint8_t swd_flash_syscall_exec(const program_syscall_t *sysCallParam, uint32_t e
     return 1;
 }
 
+uint32_t swd_flash_syscall_verify_exec(const program_syscall_t *sysCallParam, uint32_t entry, uint32_t arg1, uint32_t arg2, uint32_t arg3, uint32_t arg4, flash_algo_return_t return_type)
+{
+    DEBUG_STATE state = {{0}, 0};
+    // Call flash algorithm function on target and wait for result.
+    state.r[0]     = arg1;                   // R0: Argument 1
+    state.r[1]     = arg2;                   // R1: Argument 2
+    state.r[2]     = arg3;                   // R2: Argument 3
+    state.r[3]     = arg4;                   // R3: Argument 4
+    state.r[9]     = sysCallParam->static_base;    // SB: Static Base
+    state.r[13]    = sysCallParam->stack_pointer;  // SP: Stack Pointer
+    state.r[14]    = sysCallParam->breakpoint;     // LR: Exit Point
+    state.r[15]    = entry;                        // PC: Entry Point
+    state.xpsr     = 0x01000000;          // xPSR: T = 1, ISR = 0
+
+    if (!swd_write_debug_state(&state)) {
+        return 0;
+    }
+
+    if (!swd_wait_until_halted()) {
+        return 0;
+    }
+
+    if (!swd_read_core_register(0, &state.r[0])) {
+        return 0;
+    }
+
+    //remove the C_MASKINTS
+    if (!swd_write_word(DBG_HCSR, DBGKEY | C_DEBUGEN | C_HALT)) {
+        return 0;
+    }
+
+    if ( return_type == FLASHALGO_RETURN_POINTER ) {
+        // Flash verify functions return pointer to byte following the buffer if successful.
+        if (state.r[0] != (arg1 + arg2)) {
+            return 0;
+        }
+    }
+    return state.r[0];
+}
+
 // SWD Reset
 static uint8_t swd_reset(uint32_t count)
 {
@@ -775,13 +814,13 @@ uint8_t JTAG2SWD()
 {
     uint32_t tmp = 0;
 
-    if (!swd_reset(51)) {
+    if (!swd_reset(52)) {
         return 0;
     }
     if (!swd_switch(0xE79E)) {
         return 0;
     }
-    if (!swd_reset(54)) {
+    if (!swd_reset(57)) {
         return 0;
     }
 

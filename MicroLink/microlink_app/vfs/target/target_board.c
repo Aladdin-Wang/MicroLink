@@ -23,7 +23,7 @@
 #include "target_board.h"
 #include "compiler.h"
 #include "swd_host.h"
-#include "core_cm3.h"
+
 // Disable optimization of these functions.
 //
 // This is required because for the "no target" builds, the compiler sees g_board_info fields as
@@ -41,23 +41,6 @@ __WEAK const char * NO_OPTIMIZE_INLINE get_board_id(void)
 }
 NO_OPTIMIZE_POST
 
-
-uint32_t  get_family_id(void)
-{
-    uint32_t val = 0;
-    swd_init_debug();
-    swd_read_word((uint32_t)0xE0042000, &val); 
-    if(val == 0){
-        swd_init_debug();
-        swd_read_word((uint32_t)0x5C001000, &val); //STM32H7
-    }
-    if(val == 0){
-        swd_init_debug();
-        swd_read_word((uint32_t)0xE0044000, &val); //GD32E507
-    }
-    swd_write_word((uint32_t)&SCB->AIRCR, ((0x5FA << SCB_AIRCR_VECTKEY_Pos) | SCB_AIRCR_SYSRESETREQ_Msk)); 
-    return val;
-}
 
 
 // Disable optimization of this function.
