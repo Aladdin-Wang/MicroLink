@@ -193,7 +193,7 @@ MicroLink支持系统固件升级，可以为后续添加更多的功能，升�
 
 
 
-**开发资料下载地址**：https://pan.baidu.com/s/1Dr8Ss16cBRWXtQpyOGrROg?pwd=zyo0 
+**开发资料下载地址**：https://pan.baidu.com/s/1Dr8Ss16cBRWXtQpyOGrROg?pwd=zyo0
 
 
 
@@ -207,7 +207,7 @@ MicroLink支持系统固件升级，可以为后续添加更多的功能，升�
 
 DETAILS.TXT记录了MicroLink软硬件版本和每次版本更新的内容。
 
-![](E:/software/MicroBoot/docs/images/microlink/DETAILS.png)
+![](MicroLink/external/MicroBoot/docs/images/microlink/DETAILS.jpg)
 
 - MBED.HTM
 
@@ -284,15 +284,15 @@ JTAG简化接线图：
 
 2、与设备连接好SWD引脚，选择MICROLINK CMSIS-DAP，Max Clock下载时钟频率选择10MHz
 
-![](microlink/MAX_Clock.jpg)
+![](images/microlink/MAX_Clock.jpg)
 
 3、勾选自动复位选项，添加下载算法
 
-![](E:/software/MicroBoot/docs/images/microlink/XZSF.jpg)
+![](MicroLink/external/MicroBoot/docs/images/microlink/XZSF.jpg)
 
 - 以SEGGER Embedded Studio为例
 
-1、点击工程， 右击选择“options” ， 在弹出的对话框中点击Debugger,然后选择GDB Server  
+1、点击工程， 右击选择“options” ， 在弹出的对话框中点击Debugger,然后选择GDB Server
 
 ![](images/microlink/SES1.jpg)
 
