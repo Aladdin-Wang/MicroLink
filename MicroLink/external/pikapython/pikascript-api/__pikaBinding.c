@@ -23,13 +23,9 @@
 #include "PikaStdData.h"
 #include "PikaStdDevice.h"
 #include "PikaStdLib.h"
-#include "RTTView.h"
 #include "SystemView.h"
 #include "_time.h"
 #include "builtins.h"
-#include "cmd.h"
-#include "load.h"
-#include "ym.h"
 #include "PikaStdData_ByteArray.h"
 #include "builtins_bytearray.h"
 #include "PikaStdData_Dict.h"
@@ -286,9 +282,6 @@ PikaObj *New_PikaMain(Args *args){
 #ifndef PIKA_MODULE_PIKASTDLIB_DISABLE
     obj_newObj(self, "PikaStdLib", "PikaStdLib", New_PikaStdLib);
 #endif
-#ifndef PIKA_MODULE_RTTVIEW_DISABLE
-    obj_newObj(self, "RTTView", "RTTView", New_RTTView);
-#endif
 #ifndef PIKA_MODULE_SYSTEMVIEW_DISABLE
     obj_newObj(self, "SystemView", "SystemView", New_SystemView);
 #endif
@@ -297,15 +290,6 @@ PikaObj *New_PikaMain(Args *args){
 #endif
 #ifndef PIKA_MODULE_BUILTINS_DISABLE
     obj_newObj(self, "builtins", "builtins", New_builtins);
-#endif
-#ifndef PIKA_MODULE_CMD_DISABLE
-    obj_newObj(self, "cmd", "cmd", New_cmd);
-#endif
-#ifndef PIKA_MODULE_LOAD_DISABLE
-    obj_newObj(self, "load", "load", New_load);
-#endif
-#ifndef PIKA_MODULE_YM_DISABLE
-    obj_newObj(self, "ym", "ym", New_ym);
 #endif
     obj_setClass(self, PikaMain);
     return self;
@@ -3083,39 +3067,6 @@ Arg *PikaStdTask_Task(PikaObj *self){
 }
 #endif
 
-#ifndef PIKA_MODULE_RTTVIEW_DISABLE
-void RTTView_startMethod(PikaObj *self, Args *_args_){
-    PikaTuple* val = args_getTuple(_args_, "val");
-    RTTView_start(self, val);
-}
-method_typedef(
-    RTTView_start,
-    "start", "*val"
-);
-
-void RTTView_stopMethod(PikaObj *self, Args *_args_){
-    PikaTuple* val = args_getTuple(_args_, "val");
-    RTTView_stop(self, val);
-}
-method_typedef(
-    RTTView_stop,
-    "stop", "*val"
-);
-
-class_def(RTTView){
-    __BEFORE_MOETHOD_DEF
-    method_def(RTTView_start, 274811347),
-    method_def(RTTView_stop, 2090736459),
-};
-class_inhert(RTTView, TinyObj);
-
-PikaObj *New_RTTView(Args *args){
-    PikaObj *self = New_TinyObj(args);
-    obj_setClass(self, RTTView);
-    return self;
-}
-#endif
-
 #ifndef PIKA_MODULE_SYSTEMVIEW_DISABLE
 void SystemView_startMethod(PikaObj *self, Args *_args_){
     PikaTuple* val = args_getTuple(_args_, "val");
@@ -5744,160 +5695,6 @@ PikaObj *New_builtins_object(Args *args){
 
 Arg *builtins_object(PikaObj *self){
     return obj_newObjInPackage(New_builtins_object);
-}
-#endif
-
-#ifndef PIKA_MODULE_CMD_DISABLE
-void cmd_bootloaderMethod(PikaObj *self, Args *_args_){
-    int res = cmd_bootloader(self);
-    method_returnInt(_args_, res);
-}
-method_typedef(
-    cmd_bootloader,
-    "bootloader", ""
-);
-
-void cmd_read_flashMethod(PikaObj *self, Args *_args_){
-    PikaTuple* val = args_getTuple(_args_, "val");
-    cmd_read_flash(self, val);
-}
-method_typedef(
-    cmd_read_flash,
-    "read_flash", "*val"
-);
-
-void cmd_read_ramMethod(PikaObj *self, Args *_args_){
-    PikaTuple* val = args_getTuple(_args_, "val");
-    cmd_read_ram(self, val);
-}
-method_typedef(
-    cmd_read_ram,
-    "read_ram", "*val"
-);
-
-void cmd_set_swd_clockMethod(PikaObj *self, Args *_args_){
-    int clock = args_getInt(_args_, "clock");
-    int res = cmd_set_swd_clock(self, clock);
-    method_returnInt(_args_, res);
-}
-method_typedef(
-    cmd_set_swd_clock,
-    "set_swd_clock", "clock"
-);
-
-void cmd_write_flashMethod(PikaObj *self, Args *_args_){
-    PikaTuple* val = args_getTuple(_args_, "val");
-    int res = cmd_write_flash(self, val);
-    method_returnInt(_args_, res);
-}
-method_typedef(
-    cmd_write_flash,
-    "write_flash", "*val"
-);
-
-void cmd_write_ramMethod(PikaObj *self, Args *_args_){
-    PikaTuple* val = args_getTuple(_args_, "val");
-    int res = cmd_write_ram(self, val);
-    method_returnInt(_args_, res);
-}
-method_typedef(
-    cmd_write_ram,
-    "write_ram", "*val"
-);
-
-class_def(cmd){
-    __BEFORE_MOETHOD_DEF
-    method_def(cmd_bootloader, 429518288),
-    method_def(cmd_write_flash, 1323052349),
-    method_def(cmd_set_swd_clock, 1874169193),
-    method_def(cmd_read_flash, 1933129198),
-    method_def(cmd_write_ram, 1977149231),
-    method_def(cmd_read_ram, 2034896800),
-};
-class_inhert(cmd, TinyObj);
-
-PikaObj *New_cmd(Args *args){
-    PikaObj *self = New_TinyObj(args);
-    obj_setClass(self, cmd);
-    return self;
-}
-#endif
-
-#ifndef PIKA_MODULE_LOAD_DISABLE
-void load_binMethod(PikaObj *self, Args *_args_){
-    PikaTuple* val = args_getTuple(_args_, "val");
-    int res = load_bin(self, val);
-    method_returnInt(_args_, res);
-}
-method_typedef(
-    load_bin,
-    "bin", "*val"
-);
-
-void load_hexMethod(PikaObj *self, Args *_args_){
-    PikaTuple* val = args_getTuple(_args_, "val");
-    int res = load_hex(self, val);
-    method_returnInt(_args_, res);
-}
-method_typedef(
-    load_hex,
-    "hex", "*val"
-);
-
-void load_offlineMethod(PikaObj *self, Args *_args_){
-    PikaTuple* val = args_getTuple(_args_, "val");
-    load_offline(self, val);
-}
-method_typedef(
-    load_offline,
-    "offline", "*val"
-);
-
-class_def(load){
-    __BEFORE_MOETHOD_DEF
-    method_def(load_bin, 193487294),
-    method_def(load_hex, 193493706),
-    method_def(load_offline, 1503719112),
-};
-class_inhert(load, TinyObj);
-
-PikaObj *New_load(Args *args){
-    PikaObj *self = New_TinyObj(args);
-    obj_setClass(self, load);
-    return self;
-}
-#endif
-
-#ifndef PIKA_MODULE_YM_DISABLE
-void ym_receiveMethod(PikaObj *self, Args *_args_){
-    PikaTuple* val = args_getTuple(_args_, "val");
-    ym_receive(self, val);
-}
-method_typedef(
-    ym_receive,
-    "receive", "*val"
-);
-
-void ym_sendMethod(PikaObj *self, Args *_args_){
-    PikaTuple* val = args_getTuple(_args_, "val");
-    ym_send(self, val);
-}
-method_typedef(
-    ym_send,
-    "send", "*val"
-);
-
-class_def(ym){
-    __BEFORE_MOETHOD_DEF
-    method_def(ym_receive, 1040211272),
-    method_def(ym_send, 2090720079),
-};
-class_inhert(ym, TinyObj);
-
-PikaObj *New_ym(Args *args){
-    PikaObj *self = New_TinyObj(args);
-    obj_setClass(self, ym);
-    return self;
 }
 #endif
 

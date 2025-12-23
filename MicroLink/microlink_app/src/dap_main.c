@@ -134,10 +134,6 @@ void chry_dap_handle(void)
             }
         }
     }
-    if(get_system_time_ms() >= current_time) {
-        read_rtt_and_send_usb();
-        SYSVIEW_REC_GetOutgoing();
-    }
 }
 
 
